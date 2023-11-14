@@ -9,6 +9,9 @@ def connect_db(dbname):
     )
     return mydb
 
+def hello():
+    print('Hello')
+
 
 def add_user(dbname, fname: str, lname: str, password: str):
     if not isinstance(fname, str):
