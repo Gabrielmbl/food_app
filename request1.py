@@ -9,8 +9,8 @@ def connect_db(dbname):
     )
     return mydb
 
-def hello():
-    print('Hello')
+def test():
+    print("testing")
 
 
 def add_user(dbname, fname: str, lname: str, password: str):
