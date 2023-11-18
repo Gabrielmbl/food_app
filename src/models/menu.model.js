@@ -1,4 +1,4 @@
-//food_menu object create
+//menu object create
 var Menu = function (menu) 
 {
     this.name = menu.name;
