@@ -4,6 +4,7 @@ var Menu = function (menu)
     this.name = menu.name;
     this.description = menu.description;
     this.price = menu.price;
+    this.meal = menu.meal;
 };
 
 Menu.create = function (menu, result) 
@@ -49,10 +50,12 @@ Menu.findAll = function (result)
         if (err) 
         {
             console.log("errors: ", err);
+            console.log("NOOOO", err);
             result(null, err);
         }
         else 
         {
+            console.log('menus : ', res);
             result(null, res);
         }
     });
