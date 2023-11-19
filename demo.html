@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>Page Title</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <link rel='stylesheet' type='text/css' media='screen' href='main.css'>
+    <script src='main.js'></script>
+
+   <!-- Importing the Jquery Library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+</head>
+<body>
+    
+
+    <h1> Check User Info - Get Call Demo</h1>
+    <div name="UserInfoForm">
+        <input type="text" placeholder="enter your userid" id="userid" name="userid" />
+        <button onclick="getCall()"> Get Student Info</button>
+    </div>
+    
+
+    <h1> Login - Post Call Demo</h1>
+    <div name="LoginForm" >
+        <input type="text" placeholder="enter your username" id="username" name="username" />
+        <input type="password" placeholder="enter your password" id="pwd" name="pwd" />
+        <button onclick="postCall()"> Login</button>
+    </div>
+
+
+    <script>
+        // References
+        // https://www.w3schools.com/jquery/jquery_ajax_get_post.asp
+
+        function getCall(){
+            // $.get(URL,callback); -- Syntax
+
+            //get the input from the form
+            var userId= document.getElementById('userid').value
+            var url=`http://localhost:4001/api/users/${userId}`;
+            //alert(url);
+            $.get(url, function(data, status){
+                console.log(data)
+                alert("Data: " + data + "\nStatus: " + status);
+            });
+        }
+
+        function postCall(){
+            // $.post(URL,data,callback); -- Syntax
+
+            //get the user inputs from the form
+            var userId= document.getElementById('username').value
+            var pwd= document.getElementById('pwd').value
+            var url=`http://localhost:4001/api/users`;
+            var data = {
+                'userid': userId,
+                'password': pwd
+            }
+            
+            // alert(url);
+            // console.log(data)
+            // alert(data);
+            
+            $.post(url,
+                data,
+                function(data, status){
+                    console.log(data)
+                    alert("Data: " + data + "\nStatus: " + status);
+                });
+        }
+    </script>
+
+</body>
+</html>
