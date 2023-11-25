@@ -9,26 +9,27 @@ var Users = function (user) {
     this.lname = user.lname;
     this.password = user.password;
 };
-Users.create = function (user, result) {
-
+Users.create = function (user, result) 
+{
     //encrypt password
-    bcrypt.hash(user.password, saltRounds, function(err, hash) {
+    bcrypt.hash(user.password, saltRounds, function(err, hash) 
+    {
         // Store hash in your password DB.
         user.password=hash;
-        dbConn.query("INSERT INTO users set ?", user, function (err, res) {
-            if (err) {
+        dbConn.query("INSERT INTO users SET ?", user, function (err, res) 
+        {
+            if (err) 
+            {
                 console.log("errors: ", err);
                 result(err, null);
             }
-            else {
+            else 
+            {
                 console.log(res.insertId);
                 result(null, res.insertId);
-                // result(null, user.email);
             }
         });
     });
-
-    
 };
 
 Users.login = function (userid, password, result) {

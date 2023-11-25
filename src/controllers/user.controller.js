@@ -50,28 +50,28 @@ exports.login = function (req, res) {
 
 exports.create = function (req, res) {
    
-    if (req.body.constructor === Object && Object.keys(req.body).length === 0) {
+    if (req.body.constructor === Object && Object.keys(req.body).length === 0) 
+    {
         res.status(400).send({ errors: true, message: 'Please provide all required field' });
         return;
-    } 
-    // let data = {
-    //     firstname: req.body.firstname, 
-    //     lastname: req.body.lastname, 
-    //     email: req.body.email, 
-    //     role: process.env.ROLE_EMPLOYEE, 
-    //     password: "_default_password"    
-    // };
-    const user = new User(req.body);
+    }
+
+    let data = 
+    {
+        fname: req.body.fname, 
+        lname: req.body.lname, 
+        password: req.body.password   
+    };
+    const user = new User(data);
     
-    User.create(user, function (err, userId) {
+    User.create(user, function (err, userId) 
+    {
         if (err){
             console.log(err);
             res.status(401).json({ errors:true, message: "An unknown error has occured"});
         }else{
         
             res.status(200).json({ errors: false, id:userId, user: user, message: "User added successfully!" });    
-            
-          
         }
     });
 };

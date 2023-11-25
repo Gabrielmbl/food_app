@@ -16,7 +16,7 @@ exports.findAll = function (req, res)
 
 exports.viewByMeal = function (req, res) 
 {
-    const {meal}= req.body; //breakfast, lunch or dinner
+    var meal = req.params.meal; //breakfast, lunch or dinner
     Menu.search(meal, function (err, menu) 
     {
         if (err)
@@ -31,7 +31,7 @@ exports.viewByMeal = function (req, res)
 
 exports.createMeal = function (req, res) 
 {
-    if (req.body.constructor === Object && Object.keys(req.body).length === 0) 
+    if (req.body.constructor === Object && Object.keys(req.body).length == 0) 
     {
         res.status(400).send({ errors: true, message: 'Please provide all required field' });
         return;
@@ -43,7 +43,7 @@ exports.createMeal = function (req, res)
         price: req.body.price,  
         meal: req.body.meal
     };
-    const menu = new Menu(req.body);
+    const menu = new Menu(data);
     
     Menu.create(menu, function (err, menuid) 
     {
