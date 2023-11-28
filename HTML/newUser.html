@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <!-- Importing the Jquery Library -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+</head>
+
+<body>
+
+    <h1>Create New Account</h1>
+
+    <div>
+        <label for="fname">First Name:</label><br>
+        <input type="text" id="fname" name="fname" /><br>
+        <label for="lname">Last Name:</label><br>
+        <input type="text" id="lname" name="lname" /><br>
+        <label for="Password">Password:</label><br>
+        <input type="password" id="pwd" name="pwd" /><br>
+        <button onclick = "createAccount()"> Submit </button>
+        <br>
+        <br>
+        <a href="login.html">
+            <button> Return to Login </button>
+          </a>
+    </div>
+
+    <script> 
+        function createAccount()
+        {
+          var fname = document.getElementById('fname').value
+          var lname = document.getElementById('lname').value
+          var pwd = document.getElementById('pwd').value
+          var url =`http://localhost:4001/api/users/create`;
+          var data = 
+          {
+            'fname': fname,
+            'lname': lname,
+            'password': pwd
+          }
+          //console.log(data)
+          //alert(url)
+          $.post(url, data, function(data, status)
+          {
+            console.log(data.errors)
+            console.log(data)
+            alert("Data: " + data + "\nStatus: " + status);
+          });
+        }
+      </script>
+    
+</body>
+</html>

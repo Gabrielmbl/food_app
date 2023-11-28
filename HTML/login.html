@@ -13,7 +13,13 @@
     <input type="text" id="userID" name="userID" /><br>
     <label for="Password">Password:</label><br>
     <input type="password" id="pwd" name="pwd" />
-    <button onclick="login()"> Submit </button>
+    <br>
+    <button onclick = "login()"> Submit </button>
+    <br>
+    <br>
+    <a href="newUser.html">
+      <button> Create New Account </button>
+    </a>
   </div>
 
   <script> 
@@ -27,8 +33,8 @@
         'userid': userID,
         'password': pwd
       }
-      console.log(data)
-      alert(url)
+      //console.log(data)
+      //alert(url)
       $.post(url, data, function(data, status)
       {
         console.log(data.errors)
