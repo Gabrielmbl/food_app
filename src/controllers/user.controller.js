@@ -1,5 +1,6 @@
 'use strict';
 const User = require('../models/user.model');
+const Menu = require('../models/menu.model');
 const jwt = require("jsonwebtoken")
 require("dotenv");
 const crypto = require("crypto");
@@ -78,12 +79,33 @@ exports.create = function (req, res) {
 
 
 
+exports.place_order = function (req, res) {
+    // console.log("body update emp", req.body)
+    if (req.body.constructor === Object && Object.keys(req.body).length === 0) {
+        res.status(400).send({ errors: true, message: 'Please provide all required fields' });
+    } else {
+        var user = new User(req.body)
+        var menu = req.body
+        User.update(user, function (err, user) {
+            if (err)
+                res.send(err);
+            res.json({ errors: false, message: 'User successfully updated' });
+        });
+    }
+};
+
+
+
+
+
+
 exports.update = function (req, res) {
     // console.log("body update emp", req.body)
     if (req.body.constructor === Object && Object.keys(req.body).length === 0) {
         res.status(400).send({ errors: true, message: 'Please provide all required field' });
     } else {
         var user = new User(req.body)
+        var menu = new Menu(req.body)
         User.update(user, function (err, user) {
             if (err)
                 res.send(err);

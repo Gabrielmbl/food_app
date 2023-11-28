@@ -24,6 +24,9 @@ router.post('/change_password', userController.updatePassword);
 // Updates the employee
 router.put('/update', userController.update);
 
+// Place order
+router.put('/place_order', userController.update);
+
 
 
 module.exports = router
