@@ -39,6 +39,7 @@ Users.create = function (user, result) {
 
 Users.login = function (userid, password, result) {
     var sql = "Select * from users where userid = ? ";
+    console.log(userid);
     dbConn.query(sql, userid, function (err, res) {
         if (err) {
             console.log("errors: ", err);

@@ -31,7 +31,7 @@ exports.viewByMeal = function (req, res)
 
 exports.createMeal = function (req, res) 
 {
-    if (req.body.constructor === Object && Object.keys(req.body).length == 0) 
+    if (req.body.constructor === Object && Object.keys(req.body).length === 0) 
     {
         res.status(400).send({ errors: true, message: 'Please provide all required field' });
         return;
