@@ -1,14 +1,17 @@
+var dbConn = require('../../config/db.config');
+
 //menu object create
 var Menu = function (menu) 
 {
     this.name = menu.name;
     this.description = menu.description;
     this.price = menu.price;
+    this.meal = menu.meal;
 };
 
 Menu.create = function (menu, result) 
 {
-    dbConn.query("INSERT INTO menus set ?", menu, function (err, res) 
+    dbConn.query("INSERT INTO menus SET ?", menu, function (err, res) 
     {
         if (err) //Error
         {
@@ -53,6 +56,7 @@ Menu.findAll = function (result)
         }
         else 
         {
+            console.log('menus : ', res);
             result(null, res);
         }
     });
@@ -60,7 +64,7 @@ Menu.findAll = function (result)
 
 Menu.search = function (meal, result) 
 {
-    dbConn.query("SELECT * FROM menus where meal = ? ", [meal], function (err, res) 
+    dbConn.query("SELECT * FROM menus WHERE meal = ? ", meal, function (err, res) 
     {
         if (err) 
         {

@@ -1,10 +1,23 @@
 'use strict';
-const Menu = require('../models/menus.model');
+const Menu = require('../models/menu.model');
+
+exports.findAll = function (req, res) 
+{
+    Menu.findAll(function (err, menu) 
+    {
+        if (err)
+        {
+            res.send(err);
+        }
+
+        res.status(200).json({errors: false, data:menu});
+    });
+};
 
 exports.viewByMeal = function (req, res) 
 {
-    const {meal}= req.body; //breakfast, lunch or dinner
-    Menu.search(meal, function (err, food_menu) 
+    var meal = req.params.meal; //breakfast, lunch or dinner
+    Menu.search(meal, function (err, menu) 
     {
         if (err)
         {
@@ -12,13 +25,14 @@ exports.viewByMeal = function (req, res)
             result(null, err);
         }
 
-        res.status(200).json({errors: false, data:food_menu});
+        res.status(200).json({errors: false, data:menu});
     });
 };
 
 exports.createMeal = function (req, res) 
 {
-    if (req.body.constructor === Object && Object.keys(req.body).length === 0) {
+    if (req.body.constructor === Object && Object.keys(req.body).length == 0) 
+    {
         res.status(400).send({ errors: true, message: 'Please provide all required field' });
         return;
     } 
@@ -27,10 +41,11 @@ exports.createMeal = function (req, res)
         name: req.body.name, 
         description: req.body.description, 
         price: req.body.price,  
+        meal: req.body.meal
     };
-    const menu = new Menu(req.body);
+    const menu = new Menu(data);
     
-    menu.create(menu, function (err, menuid) 
+    Menu.create(menu, function (err, menuid) 
     {
         if (err)
         {

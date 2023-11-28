@@ -41,11 +41,13 @@ app.get('/', (req, res) => {
 
 // Require [user] routes
 const userRoutes = require('./src/routes/user.routes')
+const menuRoutes = require('./src/routes/menu.routes')
 
 app.use(cookieParser());
 
 // using as middleware
 app.use('/api/users', userRoutes)
+app.use('/api/menus', menuRoutes)
 
 // listen for requests
 app.listen(port, () => {

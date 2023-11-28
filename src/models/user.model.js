@@ -28,15 +28,13 @@ Users.create = function (user, result) {
                 console.log("errors: ", err);
                 result(err, null);
             }
-            else {
+            else 
+            {
                 console.log(res.insertId);
                 result(null, res.insertId);
-                // result(null, user.email);
             }
         });
     });
-
-
 };
 
 Users.login = function (userid, password, result) {
