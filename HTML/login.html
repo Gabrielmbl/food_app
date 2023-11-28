@@ -38,8 +38,19 @@
       $.post(url, data, function(data, status)
       {
         console.log(data.errors)
-        console.log(data)
+
         alert("Data: " + data + "\nStatus: " + status);
+
+        if (status == "success")
+        {
+          document.cookie = "userid = " + response.userid + ";" //path=/userOptions.html";
+          document.cookie = "fname = " + response.fname + ";"// path=/userOptions.html";
+          document.cookie = "lname = " + response.lname + ";"// path=/userOptions.html";
+
+          alert("cookies: " + document.cookie)
+
+          window.location.href = "userOptions.html";
+        }
       });
     }
   </script>

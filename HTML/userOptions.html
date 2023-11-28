@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <!-- Importing the Jquery Library -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+  <script> 
+    var userid = getCookie(userid);
+    var fname = getCookie(fname);
+    var lname = getCookie(lname);
+
+    alert("User ID: " + userid + "\nFirst Name: " + fname + "\nLast Name: " + lname)
+
+    function getCookie(cname) 
+    {
+        let name = cname + "=";
+        let decodedCookie = decodeURIComponent(document.cookie);
+        let ca = decodedCookie.split(';');
+        for(let i = 0; i <ca.length; i++) 
+        {
+            let c = ca[i];
+            while (c.charAt(0) == ' ') 
+            {
+              c = c.substring(1);
+            }
+            if (c.indexOf(name) == 0) 
+            {
+            return c.substring(name.length, c.length);
+            }
+        }
+        return "";
+    }
+    </script>
+</head>
+
+<body>
+
+    <h1>Hello 
+        <script type="text/javascript">
+        document.write(fname)
+        </script>      
+    </h1>
+
+    <div>
+        <a href="userOrders.html">
+            <button> View Previous Orders </button>
+          </a>
+    </div>
+    
+</body>
+</html>
