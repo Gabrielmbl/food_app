@@ -43,7 +43,7 @@ Menu_Orders.findAll = function (result)
 
 Menu_Order.searchByUserID = function (userid, result) 
 {
-    dbConn.query("SELECT * FROM menus where userid = ? ", [userid], function (err, res) 
+    dbConn.query("SELECT * FROM menus_orders where userid = ? ", [userid], function (err, res) 
     {
         if (err) 
         {

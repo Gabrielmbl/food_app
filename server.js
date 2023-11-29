@@ -44,6 +44,7 @@ const userRoutes = require('./src/routes/user.routes')
 const menuRoutes = require('./src/routes/menu.routes')
 const orderRoutes = require('./src/routes/order.routes')
 const meal_planRoutes = require('./src/routes/meal_plan.routes')
+const menu_orderRoutes = require('./src/routes/menu_order.routes')
 
 app.use(cookieParser());
 
@@ -52,6 +53,7 @@ app.use('/api/users', userRoutes)
 app.use('/api/menus', menuRoutes)
 app.use('/api/orders', orderRoutes)
 app.use('/api/meal_plan', meal_planRoutes)
+app.use('/api/meal_order', menu_orderRoutes)
 
 // listen for requests
 app.listen(port, () => {
