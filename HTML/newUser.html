@@ -27,29 +27,49 @@
     <script> 
         function createAccount()
         {
-          var fname = document.getElementById('fname').value
-          var lname = document.getElementById('lname').value
-          var pwd = document.getElementById('pwd').value
-          var url =`http://localhost:4001/api/users/create`;
-          var data = 
-          {
-            'fname': fname,
-            'lname': lname,
-            'password': pwd
-          }
-          //console.log(data)
-          //alert(url)
-          $.post(url, data, function(data, status)
-          {
-            console.log(data.errors)
-            console.log(data)
-            alert("Data: " + data + "\nStatus: " + status);
+            var fname = document.getElementById('fname').value
+            var lname = document.getElementById('lname').value
+            var pwd = document.getElementById('pwd').value
 
-            if (status == "success")
+            if (fname == null)
             {
-                window.location.href = "userOptions.html";
+                alert("Please enter a first name");
             }
-          });
+            else if (lname == null)
+            {
+                alert("Please enter a last name");
+            }
+            else if (pwd == null)
+            {
+                alert("Please enter a password");
+            }
+            else
+            {
+                var url =`http://localhost:4001/api/users/create`;
+                var data = 
+                {
+                    'fname': fname,
+                    'lname': lname,
+                    'password': pwd
+                }
+                //console.log(data)
+                //alert(url)
+                $.post(url, data, function(data, status)
+                {
+                    console.log(data.errors)
+                    console.log(data)
+                    //alert("Data: " + data + "\nStatus: " + status);
+
+                    if (status == "success")
+                    {
+                        localStorage.setItem("userid", user.userid);
+                        localStorage.setItem("fname", user.fname);
+                        localStorage.setItem("lname", user.lname);
+
+                        window.location.href = "userOptions.html";
+                    }
+                });
+            }
         }
       </script>
     

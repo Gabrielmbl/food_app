@@ -91,7 +91,7 @@ exports.place_order = function (req, res) {
             if (err){
                 res.send(err);
             }else{
-            res.json({ errors: false,message: 'Order placed successfully' });
+            res.status(200).json({ errors: false,message: 'Order placed successfully' });
             }
         });
     }
