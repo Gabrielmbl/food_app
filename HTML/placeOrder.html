@@ -15,6 +15,15 @@
 
     </script>
 
+    <script>
+        if (localStorage.getItem("userid") == null ||
+            localStorage.getItem("fname") == null ||
+            localStorage.getItem("lname") == null)
+        {
+            window.location.href = "login.html";
+        }
+    </script>
+
 </head>
 
 <body>

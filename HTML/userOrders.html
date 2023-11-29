@@ -3,6 +3,15 @@
 <head>
   <!-- Importing the Jquery Library -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+  <script>
+        if (localStorage.getItem("userid") == null ||
+            localStorage.getItem("fname") == null ||
+            localStorage.getItem("lname") == null)
+        {
+            window.location.href = "login.html";
+        }
+  </script>
 </head>
 
 <body>
@@ -14,6 +23,8 @@
 
         
     </div>
+
+    <div id="menuContainer"></div>
 
     <script>
         function view() 
@@ -42,7 +53,21 @@
                             
                             if (status === "success")
                             {
-                                
+                                var menuContainer = document.getElementById("menuContainer");
+                                menuContainer.innerHTML = ""; // Clear previous content
+
+                                response.data.forEach(function (menu) {
+                                    console.log("Menu item:", menu); // Log each menu item to verify its structure
+
+                                    var menuElement = document.createElement("div");
+                                    menuElement.innerHTML = `
+                                        <p>Menu ID: ${menu.menuid}</p>
+                                        <p>Name: ${menu.name}</p>
+                                        <p>Description: ${menu.description}</p>
+                                        <hr>
+                                    `;
+                                    menuContainer.appendChild(menuElement);
+                                });
                             }
                         })
                     }
