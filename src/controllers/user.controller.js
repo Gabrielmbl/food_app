@@ -166,6 +166,17 @@ exports.findAll = function (req, res) {
     });
 };
 
+exports.view_menu = function (req, res) {
+   
+    User.view_menu(function (err, menus) {
+        
+        if (err)
+            res.send(err);
+       
+        res.status(200).json({errors: false, data:menus});
+    });
+};
+
 
 exports.findById = function (req, res) {
     var id=req.params.id
