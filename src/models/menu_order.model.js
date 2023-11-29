@@ -1,3 +1,5 @@
+var dbConn = require('../../config/db.config');
+
 //menu_order object create
 var Menu_Order = function (menu_order) 
 {
@@ -25,7 +27,7 @@ Menu_Order.create = function (menu_order, result)
     )
 };
 
-Menu_Orders.findAll = function (result) 
+Menu_Order.findAll = function (result) 
 {
     dbConn.query("Select * from menus_orders", function (err, res) 
     {

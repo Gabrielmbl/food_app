@@ -53,7 +53,7 @@ app.use('/api/users', userRoutes)
 app.use('/api/menus', menuRoutes)
 app.use('/api/orders', orderRoutes)
 app.use('/api/meal_plan', meal_planRoutes)
-app.use('/api/meal_order', menu_orderRoutes)
+app.use('/api/menu_order', menu_orderRoutes)
 
 // listen for requests
 app.listen(port, () => {

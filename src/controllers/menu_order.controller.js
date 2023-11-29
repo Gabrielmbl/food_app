@@ -1,5 +1,5 @@
 'use strict';
-const Menu = require('../models/menu_order.model');
+const Menu_Order = require('../models/menu_order.model');
 
 exports.viewByUserID = function (req, res) 
 {
