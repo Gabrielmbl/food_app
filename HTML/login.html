@@ -38,18 +38,17 @@
       $.post(url, data, function(data, status)
       {
         console.log(data.errors)
-
+        console.log(data)
+        var user=data.data
         alert("Data: " + data + "\nStatus: " + status);
 
         if (status == "success")
         {
-          //document.cookie = "userid = " + data.userid + ";" //path=/userOptions.html";
-          //document.cookie = "fname = " + data.fname + ";"// path=/userOptions.html";
-          //document.cookie = "lname = " + data.lname + ";"// path=/userOptions.html";
+          localStorage.setItem("userid", user.userid);
 
-          //alert("cookies: " + document.cookie)
+          alert("Local Storage: " + localStorage.getItem("userid"))
 
-          window.location.href = "userOptions.html";
+          //window.location.href = "userOptions.html";
         }
       });
     }

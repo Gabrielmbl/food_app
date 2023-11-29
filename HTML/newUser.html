@@ -44,6 +44,11 @@
             console.log(data.errors)
             console.log(data)
             alert("Data: " + data + "\nStatus: " + status);
+
+            if (status == "success")
+            {
+                window.location.href = "userOptions.html";
+            }
           });
         }
       </script>
