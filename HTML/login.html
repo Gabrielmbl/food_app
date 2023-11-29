@@ -40,15 +40,17 @@
         console.log(data.errors)
         console.log(data)
         var user=data.data
-        alert("Data: " + data + "\nStatus: " + status);
+        //alert("Data: " + data + "\nStatus: " + status);
 
         if (status == "success")
         {
           localStorage.setItem("userid", user.userid);
+          localStorage.setItem("fname", user.fname);
+          localStorage.setItem("lname", user.lname);
 
-          alert("Local Storage: " + localStorage.getItem("userid"))
+          alert(localStorage.getItem("fname"));
 
-          //window.location.href = "userOptions.html";
+          window.location.href = "userOptions.html";
         }
       });
     }

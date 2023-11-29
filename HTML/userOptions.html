@@ -4,40 +4,24 @@
   <!-- Importing the Jquery Library -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 
-  <script> 
-    var userid = getCookie(userid);
-    var fname = getCookie(fname);
-    var lname = getCookie(lname);
+  <script>
+    alert(localStorage.getItem("fname"))
 
-    alert("User ID: " + userid + "\nFirst Name: " + fname + "\nLast Name: " + lname)
-
-    function getCookie(cname) 
+    if (localStorage.getItem("userid") == null ||
+        localStorage.getItem("fname") == null ||
+        localStorage.getItem("lname") == null)
     {
-        let name = cname + "=";
-        let decodedCookie = decodeURIComponent(document.cookie);
-        let ca = decodedCookie.split(';');
-        for(let i = 0; i <ca.length; i++) 
-        {
-            let c = ca[i];
-            while (c.charAt(0) == ' ') 
-            {
-              c = c.substring(1);
-            }
-            if (c.indexOf(name) == 0) 
-            {
-            return c.substring(name.length, c.length);
-            }
-        }
-        return "";
+        window.location.href = "login.html";
     }
-    </script>
+  </script>
+
 </head>
 
 <body>
 
     <h1>Hello 
         <script type="text/javascript">
-        document.write(fname)
+        document.write(localStorage.getItem("fname"));
         </script>      
     </h1>
 
@@ -45,7 +29,21 @@
         <a href="userOrders.html">
             <button> View Previous Orders </button>
         </a>
+        <br>
+        <a href="placeOrder.html">
+            <button> Place New Order </button>
+        </a>
+        <br>
+        <button onclick = "loggout()"> Loggout </button>
     </div>
-    
+
+    <script> 
+        function loggout()
+        {
+          localStorage.clear();
+
+          window.location.href = "login.html";
+        }
+      </script>    
 </body>
 </html>
