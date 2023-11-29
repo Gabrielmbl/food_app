@@ -78,6 +78,22 @@ Menu.search = function (meal, result)
     });
 };
 
+Menu.searchByID = function (id, result) 
+{
+    dbConn.query("SELECT * FROM menus WHERE menuid = ? ", id, function (err, res) 
+    {
+        if (err) 
+        {
+            console.log("errors: ", err);
+            result(err, null);
+        }
+        else 
+        {
+            result(null, res);
+        }
+    });
+};
+
 Menu.delete = function (menuid, result) 
 {
     dbConn.query("DELETE FROM menus WHERE menuid = ?", [menuid], function (err, res) 

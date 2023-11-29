@@ -29,6 +29,21 @@ exports.viewByMeal = function (req, res)
     });
 };
 
+exports.viewByID = function (req, res) 
+{
+    var id = req.params.id; 
+    Menu.searchByID(id, function (err, menu) 
+    {
+        if (err)
+        {
+            console.log("errors: ", err);
+            result(null, err);
+        }
+
+        res.status(200).json({errors: false, data:menu});
+    });
+};
+
 exports.createMeal = function (req, res) 
 {
     if (req.body.constructor === Object && Object.keys(req.body).length === 0) 
