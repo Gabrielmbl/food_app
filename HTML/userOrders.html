@@ -26,13 +26,25 @@
                 console.log(data.errors)
                 console.log(data)
                 var order = data.data
-                alert("Data: " + data + "\nStatus: " + status);
+                //alert("Data: " + data + "\nStatus: " + status);
 
                 if (status === "success") 
                 {
                     for (let i = 0; i < order.length; i++)
                     {
-                        alert(order[i].menuid)
+                        var food = order[i].menuid
+                        var url2 = `http://localhost:4001/api/menu/${food}`;
+
+                        $.get(url2, function (data, status)
+                        {
+                            console.log(data.errors)
+                            console.log(data)
+                            
+                            if (status === "success")
+                            {
+                                
+                            }
+                        })
                     }
                 }
 
