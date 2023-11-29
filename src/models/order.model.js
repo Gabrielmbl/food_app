@@ -1,3 +1,5 @@
+var dbConn = require('../../config/db.config');
+
 //order object create
 var Order = function (order) 
 {
@@ -8,7 +10,7 @@ var Order = function (order)
 
 Order.create = function (order, result) 
 {
-    dbConn.query("INSERT INTO orders set ?", order, function (err, res) 
+    dbConn.query("INSERT INTO orders (userid, price, date) VALUES(?, ?, NOW())", order, function (err, res) 
     {
         if (err) //Error
         {
@@ -26,6 +28,7 @@ Order.create = function (order, result)
 
 Order.findAll = function (result) 
 {
+    debugger
     dbConn.query("Select * from orders", function (err, res) 
     {
         if (err) 
@@ -42,7 +45,7 @@ Order.findAll = function (result)
 
 Order.searchByUserID = function (userid, result) 
 {
-    dbConn.query("SELECT * FROM menus where userid = ? ", [userid], function (err, res) 
+    dbConn.query("SELECT * FROM orders where userid = ? ", [userid], function (err, res) 
     {
         if (err) 
         {

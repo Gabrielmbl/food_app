@@ -10,12 +10,6 @@ var Users = function (user) {
     this.password = user.password;
 };
 
-var Menus = function (menu) {
-    this.name = menu.name;
-    this.description = menu.description;
-    this.price = menu.price;
-    this.meal = menu.meal;
-}
 
 Users.create = function (user, result) {
 
@@ -28,8 +22,7 @@ Users.create = function (user, result) {
                 console.log("errors: ", err);
                 result(err, null);
             }
-            else 
-            {
+            else {
                 console.log(res.insertId);
                 result(null, res.insertId);
             }
@@ -136,130 +129,17 @@ Users.delete = function (userid, result) {
 module.exports = Users;
 
 
-// Users.place_oder = function (userid, menuid, result) {
-//     // Check if user has 
-//     dbConn.query("select * from plan_histories where userid = ? and start_date <= CURDATE() and end_date >= CURDATE() order by end_date desc limit 1", [userid], function (err, meal_check_result) {
-//         if (err) {
-//             console.log("errors: ", err);
-//             result(null, err);
-//         }
-//         else {
-//             if (meal_check_result > 0) {
-//                 const mealid = meal_check_result[0]['mealid']
-//                 const num_meals_sql = "select * from meal_plans where mealid = ?";
-//                 dbConn.query(num_meals_sql, [mealid], function (err, num_meals_result) {
-//                     if (err) {
-//                         console.log("Error fetching number of meals: ", err);
-//                         result(null, err);
-//                     }
-//                     else {
-//                         if (num_meals_result.length > 0) {
-//                             const num_meals = parseInt(num_meals_result[0]['num_meals_day']);
-//                             result(null, num_meals);
-//                         }
-//                         else {
-//                             console.log("No meals left for mealid: ", mealid);
-//                             result(null, 0);
-//                         }
-//                     }
-//                 })
-//             }
-
-//         }
-//     });
-
-//     // Check if an order for the user on the same day exists
-//     const sql3 = "SELECT * FROM orders WHERE userid = ? AND DATE(date) = CURDATE()";
-//     dbConn.query(sql3, [userid], function (err, myresult3) {
-//         if (err) {
-//             console.log("Error checking user's order today: ", err);
-//             result(null, err);
-//         } else {
-//             if (myresult3.length > 0) {
-//                 console.log('Found an order made by this user today');
-//                 const orderid = myresult3[0]['orderid'];
-
-//                 const num_times_sql = "SELECT count(*) as num_times FROM menus_orders WHERE userid = ? and orderid = ? and DATE(date) = CURDATE()";
-//                 dbConn.query(num_times_sql, [userid, orderid], function (err, num_times_result) {
-//                     if (err) {
-//                         console.log("Error checking the number of times the person has eaten today: ", err);
-//                         result(null, err);
-//                     } else {
-//                         const num_times = num_times_result[0]['num_times'];
-
-//                         if (num_times < num_meals) {
-//                             const order_sql_update = "UPDATE orders SET price = 0 WHERE userid = ? AND DATE(date) = CURDATE()";
-//                             dbConn.query(order_sql_update, [userid], function (err) {
-//                                 if (err) {
-//                                     console.log("Error updating existing order for today's price: ", err);
-//                                     result(null, err);
-//                                 } else {
-//                                     result(null, 'Order updated successfully');
-//                                 }
-//                             });
-//                         } else {
-//                             const order_sql_update = "UPDATE orders SET price = price + ? WHERE userid = ? AND DATE(date) = CURDATE()";
-//                             dbConn.query(order_sql_update, [food_price, userid], function (err) {
-//                                 if (err) {
-//                                     console.log("Error updating existing order for today's price: ", err);
-//                                     result(null, err);
-//                                 } else {
-//                                     result(null, 'Order updated successfully');
-//                                 }
-//                             });
-//                         }
-//                     }
-//                 });
-//             } else {
-//                 console.log('Did not find an order made by this user today');
-//                 // If the person has a meal plan
-//                 if (meal_check_result > 0) {
-//                     const sql5 = "INSERT INTO orders (userid, price, date) VALUES(?, 0, NOW())";
-//                     dbConn.query(sql5, [userid], function (err) {
-//                         if (err) {
-//                             console.log("Error adding order for today: ", err);
-//                             result(null, err);
-//                         } else {
-//                             result(null, 'Order for the day added successfully');
-//                         }
-//                     })
-//                 } else {
-//                     // Create a new order
-//                     const sql6 = "INSERT INTO orders (userid, price, date) VALUES (?, ?, NOW())"
-//                     dbConn.query(sql6, [userid, food_price], function (err) {
-//                         if (err) {
-//                             console.log("Error creating order for today: ", err);
-//                             result(null, err);
-//                         } else {
-//                             result(null, 'Order created successfully');
-//                         }
-//                     });
-//                 }
-//             }
-//         }
-
-//     });
-
-//     // Updating menu_orders table
-//     const menus_orders = "INSERT INTO menus_orders (orderid, menuid, userid, date) VALUES (?, ?, ?, NOW())";
-//     dbConn.query(menus_orders, [orderid, menuid, userid], function (err) {
-//         if (err) {
-//             console.log("Error adding to menus_orders table: ", err);
-//             result(null, err);
-//         }
-//         else {
-//             result(null, 'menus_orders table updated successfully');
-//         }
-//     });
-
-// };
-
-
-
-
-
 Users.place_order = function (userid, menuid, result) {
     let orderid;
+    let food_price;
+    dbConn.query("SELECT price FROM menus WHERE menuid = ?", [menuid], function (err, result) {
+        if (err) {
+            console.log("Error checking menu price: ", err);
+            result(null, err);
+        } else {
+            food_price = result[0]['price'];
+        }
+    });
     // Check if user has meal plan
     dbConn.query("select * from plan_histories where userid = ? and start_date <= CURDATE() and end_date >= CURDATE() order by end_date desc limit 1", [userid], function (err, meal_check_result) {
         if (err) {
@@ -288,10 +168,10 @@ Users.place_order = function (userid, menuid, result) {
                                 } else {
                                     // If there is an order on that day
                                     if (myresult3.length > 0) {
-                                        console.log('Found an order made by this user today');
                                         // const orderid = myresult3[0]['orderid'];
                                         orderid = myresult3[0]['orderid'];
-                                        
+                                        console.log('Found an order made by this user today', orderid);
+
                                         // Check the amount of times the user has eaten today
                                         const num_times_sql = "SELECT count(*) as num_times FROM menus_orders WHERE userid = ? and orderid = ? and DATE(date) = CURDATE()";
                                         dbConn.query(num_times_sql, [userid, orderid], function (err, num_times_result) {
@@ -300,76 +180,59 @@ Users.place_order = function (userid, menuid, result) {
                                                 result(null, err);
                                             } else {
                                                 const num_times = num_times_result[0]['num_times'];
-                                                
+
                                                 // Check if user has eaten less times than he is allowed, which would keep the order's price $0
                                                 if (num_times < num_meals) {
                                                     const order_sql_update = "UPDATE orders SET price = 0 WHERE userid = ? AND DATE(date) = CURDATE()";
+                                                    insertMenusOrders(orderid, menuid, userid, result);
                                                     dbConn.query(order_sql_update, [userid], function (err) {
                                                         if (err) {
                                                             console.log("Error updating existing order for today's price: ", err);
                                                             result(null, err);
                                                         } else {
-                                                            result(null, 'Order updated successfully');
+                                                            //result(null, 'Order updated successfully');
                                                         }
                                                     });
                                                 } else {
                                                     // In case the user has eaten more times than he is allowed today, add food price to order price
                                                     const order_sql_update = "UPDATE orders SET price = price + ? WHERE userid = ? AND DATE(date) = CURDATE()";
+                                                    insertMenusOrders(orderid, menuid, userid, result);
                                                     dbConn.query(order_sql_update, [food_price, userid], function (err) {
                                                         if (err) {
                                                             console.log("Error updating existing order for today's price: ", err);
                                                             result(null, err);
                                                         } else {
-                                                            result(null, 'Order updated successfully');
+                                                            //result(null, 'Order updated successfully');
                                                         }
                                                     });
                                                 }
                                             }
                                         });
 
-                                        // // Updating menu_orders table
-                                        // const menus_orders = "INSERT INTO menus_orders (orderid, menuid, userid, date) VALUES (?, ?, ?, NOW())";
-                                        // dbConn.query(menus_orders, [orderid, menuid, userid], function (err) {
-                                        //     if (err) {
-                                        //         console.log("Error adding to menus_orders table: ", err);
-                                        //         result(null, err);
-                                        //     }
-                                        //     else {
-                                        //         result(null, 'menus_orders table updated successfully');
-                                        //     }
-                                        // });
-
                                     } else {
                                         // No order found for the user today, create a new one
                                         const sql5 = "INSERT INTO orders (userid, price, date) VALUES(?, 0, NOW())";
-                                        dbConn.query(sql5, [userid], function (err) {
+                                        dbConn.query(sql5, [userid], function (err, result) {
                                             if (err) {
                                                 console.log("Error adding order for today: ", err);
                                                 result(null, err);
                                             } else {
-                                                const get_order_by_userid_date = "SELECT * FROM orders where userid = ? and date = CURDATE()";
+                                                const get_order_by_userid_date = "SELECT * FROM orders where userid = ? and date(date) = CURDATE()";
                                                 dbConn.query(get_order_by_userid_date, [userid], function (err, result) {
                                                     if (err) {
                                                         result(null, err);
                                                     }
-                                                    else{
-                                                        orderid = result[0]['orderid'];
+                                                    else {
+                                                        if (result.length > 0) {
+                                                            orderid = result[0]['orderid'];
+                                                            insertMenusOrders(orderid, menuid, userid, result);
+                                                        }
                                                     }
                                                 });
-                                                // // Updating menu_orders table
-                                                // const menus_orders = "INSERT INTO menus_orders (orderid, menuid, userid, date) VALUES (?, ?, ?, NOW())";
-                                                // dbConn.query(menus_orders, [orderid, menuid, userid], function (err) {
-                                                //     if (err) {
-                                                //         console.log("Error adding to menus_orders table: ", err);
-                                                //         result(null, err);
-                                                //     }
-                                                //     else {
-                                                //         result(null, 'menus_orders table updated successfully');
-                                                //     }
-                                                // });
-                                                result(null, 'Order for the day added successfully');
+                                                console.log('No order found for the user, creating a new one')
                                             }
                                         })
+
                                     }
                                 }
                             });
@@ -393,12 +256,13 @@ Users.place_order = function (userid, menuid, result) {
                             // Update orderid here
                             orderid = myresult3[0]['orderid'];
                             const order_sql_update = "UPDATE orders SET price = price + ? WHERE userid = ? AND DATE(date) = CURDATE()";
+                            insertMenusOrders(orderid, menuid, userid, result);
                             dbConn.query(order_sql_update, [food_price, userid], function (err) {
                                 if (err) {
                                     console.log("Error updating existing order for today's price: ", err);
                                     result(null, err);
                                 } else {
-                                    result(null, 'Order updated successfully');
+                                    //result(null, 'Order updated successfully');
                                 }
                             });
                         } else {
@@ -409,7 +273,7 @@ Users.place_order = function (userid, menuid, result) {
                                     console.log("Error creating order for today: ", err);
                                     result(null, err);
                                 } else {
-                                    result(null, 'Order created successfully');
+                                    // result(null, 'Order created successfully');
                                 }
                             });
                             const sql7 = "SELECT * FROM orders WHERE userid = ? AND DATE(date) = CURDATE()";
@@ -420,9 +284,10 @@ Users.place_order = function (userid, menuid, result) {
                                 } else {
                                     if (myresult4.length > 0) {
                                         orderid = myresult4[0]['orderid'];
+                                        insertMenusOrders(orderid, menuid, userid, result);
                                     }
                                 }
-                            }) ;
+                            });
                         }
                     }
                 });
@@ -431,7 +296,9 @@ Users.place_order = function (userid, menuid, result) {
             }
         }
     });
-    // Updating menu_orders table
+};
+
+function insertMenusOrders(orderid, menuid, userid, result) {
     const menus_orders = "INSERT INTO menus_orders (orderid, menuid, userid, date) VALUES (?, ?, ?, NOW())";
     dbConn.query(menus_orders, [orderid, menuid, userid], function (err) {
         if (err) {
@@ -442,4 +309,5 @@ Users.place_order = function (userid, menuid, result) {
             result(null, 'menus_orders table updated successfully');
         }
     });
-};
+}
+

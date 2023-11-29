@@ -84,12 +84,15 @@ exports.place_order = function (req, res) {
     if (req.body.constructor === Object && Object.keys(req.body).length === 0) {
         res.status(400).send({ errors: true, message: 'Please provide all required fields' });
     } else {
-        var user = new User(req.body)
-        var menu = req.body
-        User.update(user, function (err, user) {
-            if (err)
+        var userid= req.body.userid
+        var menuid= req.body.menuid
+
+        User.place_order(userid, menuid, function (err, user) {
+            if (err){
                 res.send(err);
-            res.json({ errors: false, message: 'User successfully updated' });
+            }else{
+            res.json({ errors: false,message: 'Order placed successfully' });
+            }
         });
     }
 };
