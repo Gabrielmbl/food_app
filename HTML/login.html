@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <!-- Importing the Jquery Library -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+</head>
+<body>
+
+  <h1>Login</h1>
+
+  <div>
+    <label for="UserID">User ID:</label><br>
+    <input type="text" id="userID" name="userID" /><br>
+    <label for="Password">Password:</label><br>
+    <input type="password" id="pwd" name="pwd" />
+    <br>
+    <button onclick = "login()"> Submit </button>
+    <br>
+    <br>
+    <a href="newUser.html">
+      <button> Create New Account </button>
+    </a>
+  </div>
+
+  <script> 
+    function login()
+    {
+      var userID= document.getElementById('userID').value
+      var pwd= document.getElementById('pwd').value
+      var url=`http://localhost:4001/api/users/`;
+      var data = 
+      {
+        'userid': userID,
+        'password': pwd
+      }
+      //console.log(data)
+      //alert(url)
+      $.post(url, data, function(data, status)
+      {
+        console.log(data.errors)
+
+        alert("Data: " + data + "\nStatus: " + status);
+
+        if (status == "success")
+        {
+          //document.cookie = "userid = " + data.userid + ";" //path=/userOptions.html";
+          //document.cookie = "fname = " + data.fname + ";"// path=/userOptions.html";
+          //document.cookie = "lname = " + data.lname + ";"// path=/userOptions.html";
+
+          //alert("cookies: " + document.cookie)
+
+          window.location.href = "userOptions.html";
+        }
+      });
+    }
+  </script>
+</body>
+</html>

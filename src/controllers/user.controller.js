@@ -16,9 +16,9 @@ const createToken = (id) => {
 
 exports.login = function (req, res) {
     
-    const { email, password } = req.body;
+    const { userid, password } = req.body;
     
-    User.login(email, password, function (err, user) {
+    User.login(userid, password, function (err, user) {
         try{
             if (user==null){
                 res.status(401).json({ errors:true, message: "Invalid username/password"});
@@ -33,7 +33,7 @@ exports.login = function (req, res) {
                 delete user.password
           
             if(user.status==0){
-                res.status(401).json({ errors:true, message: "Your access to this account has been restricted. contact the admin"});
+                res.status(404).json({ errors:true, message: "Your access to this account has been restricted. contact the admin"});
             }else{
                 res.status(200).json({ errors:false,token:token, user: user.email, data:user});
             }
@@ -43,7 +43,7 @@ exports.login = function (req, res) {
         }catch (err) {
             console.log(err)
            
-            res.status(401).json({ errors:true, message: "error creating user" });
+            res.status(402).json({ errors:true, message: "error creating user" });
         }
     });
 };
