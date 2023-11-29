@@ -10,32 +10,30 @@
     <h1>Previous Orders</h1>
 
     <div>
-        <label for="userID">View Previous Orders</label><br>
-        <input type="text" id="userid" name="userID"/><br>
-        <br>
         <button onclick="view()"> Check </button>
 
         
     </div>
 
     <script>
-        function view() {
+        function view() 
+        {
+            var userID = localStorage.getItem("userid");
+            var url = `http://localhost:4001/api/orders/${userID}`;
 
-            var userID = document.getElementById('userid').value
-            var url = 'http://localhost:4001/api/vieworder';
-            var data = {
-                'userid': userID
-            }
-            $.post(url, data, function (data, status) {
+            $.get(url, function (data, status) 
+            {
                 console.log(data.errors)
                 console.log(data)
                 var order = data.data
                 alert("Data: " + data + "\nStatus: " + status);
 
-                if (status === "success") {
-                    localStorage.setItem("userid", user.userid)
-
-                    localStorage.getItem("userid")
+                if (status === "success") 
+                {
+                    for (let i = 0; i < order.length; i++)
+                    {
+                        alert(order[i].orderid)
+                    }
                 }
 
             });

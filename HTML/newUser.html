@@ -30,22 +30,26 @@
             var fname = document.getElementById('fname').value
             var lname = document.getElementById('lname').value
             var pwd = document.getElementById('pwd').value
+            var url =`http://localhost:4001/api/users/create`;
 
-            if (fname == null)
+            if (fname == "")
             {
                 alert("Please enter a first name");
             }
-            else if (lname == null)
+            else if (lname == "")
             {
                 alert("Please enter a last name");
             }
-            else if (pwd == null)
+            else if (pwd == "")
             {
                 alert("Please enter a password");
             }
+            else if (pwd.length < 6)
+            {
+                alert("Your password must be at least 6 characters long")
+            }
             else
             {
-                var url =`http://localhost:4001/api/users/create`;
                 var data = 
                 {
                     'fname': fname,
@@ -58,11 +62,11 @@
                 {
                     console.log(data.errors)
                     console.log(data)
-                    //alert("Data: " + data + "\nStatus: " + status);
-
+                    var user=data.user
+                    
                     if (status == "success")
                     {
-                        localStorage.setItem("userid", user.userid);
+                        localStorage.setItem("userid", data.id);
                         localStorage.setItem("fname", user.fname);
                         localStorage.setItem("lname", user.lname);
 
