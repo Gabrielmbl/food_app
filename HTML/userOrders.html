@@ -19,7 +19,7 @@
         function view() 
         {
             var userID = localStorage.getItem("userid");
-            var url = `http://localhost:4001/api/orders/${userID}`;
+            var url = `http://localhost:4001/api/menu_order/${userID}`;
 
             $.get(url, function (data, status) 
             {
@@ -32,7 +32,7 @@
                 {
                     for (let i = 0; i < order.length; i++)
                     {
-                        alert(order[i].orderid)
+                        alert(order[i].menuid)
                     }
                 }
 
