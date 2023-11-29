@@ -27,6 +27,4 @@ router.put('/update', userController.update);
 // Place order
 router.post('/place_order', userController.place_order);
 
-
-
 module.exports = router

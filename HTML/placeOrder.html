@@ -1,43 +1,98 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-  <!-- Importing the Jquery Library -->
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <!-- Importing the Jquery Library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+    <script>
+        var userIdFromStorage = localStorage.getItem("userid");
+
+        // document.getElementById("userIDDisplay").innerText = userIdFromStorage;
+        window.onload = function () {
+            view_menu();
+        };
+
+    </script>
+
 </head>
+
 <body>
 
-  <h1>Place Order</h1>
+    <h1>Place Order</h1>
 
-  <div>
-    <label for="userID">User ID:</label><br>
-    <input type="text" id="userID" name="userID" /><br>
-    <label for="menuid">Menu ID:</label><br>
-    <input type="text" id="menuid" name="menuid" />
-    <br>
-    <button onclick = "place_order()"> Submit </button>
-    <br>
-    <br>
-  </div>
+    <div>
+        <label>User ID:</label><br>
+        <div id="userIDDisplay">1</div><br>
 
-  <script> 
-    function place_order() {
-      var userID= document.getElementById('userID').value;
-      var menuid= document.getElementById('menuid').value;
-      var data= {
-        'userid': userID,
-        'menuid': menuid
-      }
-      var url='http://localhost:4001/api/users/place_order';
-      
-      $.post(url, data, function(data,status)
-        {console.log(data.errors);
-        alert("Data: " + data + "\nStatus: " + status);
-        if (status === "success") {
-          window.location.href = "userOptions.html";
+        <label for="menuid">Menu ID:</label><br>
+        <input type="text" id="menuid" name="menuid" />
+        <br>
+        <button onclick="place_order()"> Submit </button>
+        <br>
+        <br>
+    </div>
+    <div id="menuContainer"></div>
+
+    <script>
+        function view_menu() {
+            var url = 'http://localhost:4001/api/menus/view_menu';
+
+            $.get(url, function (response, status) {
+                if (status === "success") {
+                    console.log("Response received:", response); // Log the entire response
+
+                    if (response && Array.isArray(response.data)) {
+                        console.log("Data received:", response.data); // Log the data array
+
+                        var menuContainer = document.getElementById("menuContainer");
+                        menuContainer.innerHTML = ""; // Clear previous content
+
+                        response.data.forEach(function (menu) {
+                            console.log("Menu item:", menu); // Log each menu item to verify its structure
+
+                            var menuElement = document.createElement("div");
+                            menuElement.innerHTML = `
+                                <p>Menu ID: ${menu.menuid}</p>
+                                <p>Name: ${menu.name}</p>
+                                <p>Description: ${menu.description}</p>
+                                <hr>
+                            `;
+                            menuContainer.appendChild(menuElement);
+                        });
+                    } else {
+                        console.log("Data is not in the expected format:", response);
+                    }
+                } else {
+                    console.log("Failed to fetch data. Status:", status);
+                }
+            });
         }
-      });
-    }
-    
-  </script>
+
+
+
+
+
+
+        function place_order() {
+            var userID = document.getElementById('userID').value;
+            var menuid = document.getElementById('menuid').value;
+            var data = {
+                'userid': userID,
+                'menuid': menuid
+            }
+            var url = 'http://localhost:4001/api/users/place_order';
+
+            $.post(url, data, function (data, status) {
+                console.log(data.errors);
+                alert("Data: " + data + "\nStatus: " + status);
+                if (status === "success") {
+                    window.location.href = "userOptions.html";
+                }
+            });
+        }
+
+    </script>
 </body>
+
 </html>
