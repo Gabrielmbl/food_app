@@ -9,50 +9,35 @@
   <h1>Place Order</h1>
 
   <div>
-    <label for="userid">User ID:</label><br>
-    <input type="text" id="userid" name="userid" /><br>
-    <label for="Password">Password:</label><br>
-    <input type="password" id="pwd" name="pwd" />
+    <label for="userID">User ID:</label><br>
+    <input type="text" id="userID" name="userID" /><br>
+    <label for="menuid">Menu ID:</label><br>
+    <input type="text" id="menuid" name="menuid" />
     <br>
-    <button onclick = "login()"> Submit </button>
+    <button onclick = "place_order()"> Submit </button>
     <br>
     <br>
-    <a href="newUser.html">
-      <button> Create New Account </button>
-    </a>
   </div>
 
   <script> 
-    function login()
-    {
-      var userID= document.getElementById('userID').value
-      var pwd= document.getElementById('pwd').value
-      var url=`http://localhost:4001/api/users/`;
-      var data = 
-      {
+    function place_order() {
+      var userID= document.getElementById('userID').value;
+      var menuid= document.getElementById('menuid').value;
+      var data= {
         'userid': userID,
-        'password': pwd
+        'menuid': menuid
       }
-      //console.log(data)
-      //alert(url)
-      $.post(url, data, function(data, status)
-      {
-        console.log(data.errors)
-
+      var url='http://localhost:4001/api/users/place_order';
+      
+      $.post(url, data, function(data,status)
+        {console.log(data.errors);
         alert("Data: " + data + "\nStatus: " + status);
-
-        if (status == "success")
-        {
-          //document.cookie = "userid = " + data.userid + ";" //path=/userOptions.html";
-          //document.cookie = "fname = " + data.fname + ";"// path=/userOptions.html";
-          //document.cookie = "lname = " + data.lname + ";"// path=/userOptions.html";
-
-          //alert("cookies: " + document.cookie)
-
+        if (status === "success") {
           window.location.href = "userOptions.html";
         }
       });
     }
+    
   </script>
 </body>
 </html>

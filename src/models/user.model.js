@@ -299,16 +299,35 @@ Users.place_order = function (userid, menuid, result) {
     });
 };
 
+// function insertMenusOrders(orderid, menuid, userid, result) {
+//     const menus_orders = "INSERT INTO menus_orders (orderid, menuid, userid, date) VALUES (?, ?, ?, NOW())";
+//     dbConn.query(menus_orders, [orderid, menuid, userid], function (err) {
+//         if (err) {
+//             console.log("Error adding to menus_orders table: ", err);
+//             result(null, err);
+//         }
+//         else {
+//             result(null, 'menus_orders table updated successfully');
+//         }
+//     });
+// }
+
+
 function insertMenusOrders(orderid, menuid, userid, result) {
     const menus_orders = "INSERT INTO menus_orders (orderid, menuid, userid, date) VALUES (?, ?, ?, NOW())";
-    dbConn.query(menus_orders, [orderid, menuid, userid], function (err) {
+    dbConn.query(menus_orders, [orderid, menuid, userid], function (err, res) {
         if (err) {
             console.log("Error adding to menus_orders table: ", err);
-            result(null, err);
+            if (result && typeof result === 'function') {
+                result(err, null);
+            }
         }
         else {
-            result(null, 'menus_orders table updated successfully');
+            if (result && typeof result === 'function') {
+                result(null, 'menus_orders table updated successfully');
+            }
         }
     });
 }
+
 

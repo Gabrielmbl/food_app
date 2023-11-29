@@ -25,7 +25,7 @@ router.post('/change_password', userController.updatePassword);
 router.put('/update', userController.update);
 
 // Place order
-router.put('/place_order', userController.place_order);
+router.post('/place_order', userController.place_order);
 
 
 
