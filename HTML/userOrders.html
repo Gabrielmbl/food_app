@@ -12,6 +12,13 @@
             window.location.href = "login.html";
         }
   </script>
+
+    <script>
+        window.onload = function()
+        {
+            view();
+        }
+    </script>    
 </head>
 
 <body>
@@ -19,9 +26,7 @@
     <h1>Previous Orders</h1>
 
     <div>
-        <button onclick="view()"> Check </button>
-
-        
+                 
     </div>
 
     <div id="orderContainer"></div>
@@ -37,7 +42,6 @@
                 console.log(data.errors)
                 console.log(data)
                 var order = data.data
-                //alert("Data: " + data + "\nStatus: " + status);
 
                 if (status === "success") 
                 {
@@ -46,15 +50,10 @@
                         var food = order[i].menuid
                         var url2 = `http://localhost:4001/api/menus/${food}`;
 
-                        var orderID = order[i].orderid
-                        var date = order[i].date
-
                         $.get(url2, function (data2, status2)
                         {
                             console.log(data2.errors)
                             console.log(data2)
-
-                            alert("Data: " + data2 + "\nStatus: " + status2);
                             
                             if (status2 === "success")
                             {
@@ -66,10 +65,10 @@
 
                                     var orderElement = document.createElement("div");
                                     orderElement.innerHTML = `
-                                        <p>Order ID: ${orderID}</p>
+                                        <p>Order ID: ${data.data[i].orderid}</p>
                                         <p>Name: ${data2.data[0].name}</p>
                                         <p>Price: ${data2.data[0].price}</p>
-                                        <p>Date: ${date}</p>
+                                        <p>Date: ${(data.data[i].date).substring(0, (data.data[i].date).indexOf("T"))}</p>
                                         <hr>
                                     `;
                                     orderContainer.appendChild(orderElement);
