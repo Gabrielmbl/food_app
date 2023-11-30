@@ -24,7 +24,7 @@
         
     </div>
 
-    <div id="menuContainer"></div>
+    <div id="orderContainer"></div>
 
     <script>
         function view() 
@@ -44,30 +44,36 @@
                     for (let i = 0; i < order.length; i++)
                     {
                         var food = order[i].menuid
-                        var url2 = `http://localhost:4001/api/menu/${food}`;
+                        var url2 = `http://localhost:4001/api/menus/${food}`;
 
-                        $.get(url2, function (data, status)
+                        var orderID = order[i].orderid
+                        var date = order[i].date
+
+                        $.get(url2, function (data2, status2)
                         {
-                            console.log(data.errors)
-                            console.log(data)
+                            console.log(data2.errors)
+                            console.log(data2)
+
+                            alert("Data: " + data2 + "\nStatus: " + status2);
                             
-                            if (status === "success")
+                            if (status2 === "success")
                             {
-                                var menuContainer = document.getElementById("menuContainer");
-                                menuContainer.innerHTML = ""; // Clear previous content
+                                if (data2 && Array.isArray(data2.data)) {
+                                console.log("Data received:", data2.data); // Log the data array
+                                    
+                                    var orderContainer = document.getElementById("orderContainer");
+                                    //orderContainer.innerHTML = ""; // Clear previous content
 
-                                response.data.forEach(function (menu) {
-                                    console.log("Menu item:", menu); // Log each menu item to verify its structure
-
-                                    var menuElement = document.createElement("div");
-                                    menuElement.innerHTML = `
-                                        <p>Menu ID: ${menu.menuid}</p>
-                                        <p>Name: ${menu.name}</p>
-                                        <p>Description: ${menu.description}</p>
+                                    var orderElement = document.createElement("div");
+                                    orderElement.innerHTML = `
+                                        <p>Order ID: ${orderID}</p>
+                                        <p>Name: ${data2.data[0].name}</p>
+                                        <p>Price: ${data2.data[0].price}</p>
+                                        <p>Date: ${date}</p>
                                         <hr>
                                     `;
-                                    menuContainer.appendChild(menuElement);
-                                });
+                                    orderContainer.appendChild(orderElement);
+                                }
                             }
                         })
                     }
