@@ -6,9 +6,6 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 
     <script>
-        var userIdFromStorage = localStorage.getItem("userid");
-
-        // document.getElementById("userIDDisplay").innerText = userIdFromStorage;
         window.onload = function () {
             view_menu();
         };
@@ -18,8 +15,7 @@
     <script>
         if (localStorage.getItem("userid") == null ||
             localStorage.getItem("fname") == null ||
-            localStorage.getItem("lname") == null)
-        {
+            localStorage.getItem("lname") == null) {
             window.location.href = "login.html";
         }
     </script>
@@ -32,7 +28,7 @@
 
     <div>
         <label>User ID:</label><br>
-        <div id="userIDDisplay">1</div><br>
+        <div id="userIDDisplay"></div><br>
 
         <div>
             <a href="userOptions.html">
@@ -41,16 +37,26 @@
         </div>
         <br>
 
-        <label for="menuid">Menu ID:</label><br>
-        <input type="text" id="menuid" name="menuid" />
+        <label for="menuid">What would you like to order?</label><br>
+        <select id="menuidSelect"></select> <!-- Dropdown for Menu ID -->
         <br>
-        <button onclick="place_order()"> Submit </button>
+        <button onclick="place_order()">Submit</button>
         <br>
         <br>
     </div>
     <div id="menuContainer"></div>
 
     <script>
+
+        var userIdFromStorage = localStorage.getItem("userid");
+        console.log('userid -> ', userIdFromStorage)
+
+        var userIDDisplay = document.getElementById("userIDDisplay");
+        if (userIDDisplay !== null) {
+            userIDDisplay.innerText = userIdFromStorage;
+        } else {
+            console.log("Element with ID 'userIDDisplay' not found in the DOM.");
+        }
         function view_menu() {
             var url = 'http://localhost:4001/api/menus/view_menu';
 
@@ -64,6 +70,9 @@
                         var menuContainer = document.getElementById("menuContainer");
                         menuContainer.innerHTML = ""; // Clear previous content
 
+                        var menuDropdown = document.getElementById("menuidSelect");
+                        menuDropdown.innerHTML = ""; // Clear previous content
+
                         response.data.forEach(function (menu) {
                             console.log("Menu item:", menu); // Log each menu item to verify its structure
 
@@ -72,9 +81,15 @@
                                 <p>Menu ID: ${menu.menuid}</p>
                                 <p>Name: ${menu.name}</p>
                                 <p>Description: ${menu.description}</p>
+                                <p>Price: ${menu.price}</p>
                                 <hr>
                             `;
                             menuContainer.appendChild(menuElement);
+
+                            var option = document.createElement("option");
+                            option.value = menu.menuid;
+                            option.textContent = menu.menuid + ' - ' + menu.name; // Set the display text
+                            menuDropdown.appendChild(option);
                         });
                     } else {
                         console.log("Data is not in the expected format:", response);
@@ -91,8 +106,8 @@
 
 
         function place_order() {
-            var userID = document.getElementById('userID').value;
-            var menuid = document.getElementById('menuid').value;
+            var userID = userIdFromStorage;
+            var menuid = document.getElementById('menuidSelect').value;
             var data = {
                 'userid': userID,
                 'menuid': menuid
