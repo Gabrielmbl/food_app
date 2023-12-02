@@ -1,6 +1,5 @@
+'use strict';
 const Meal_plan = require('../models/meal_plan.model');
-const Menu = require("../models/menu.model");
-const User = require("../models/user.model");
 
 exports.findAll = function (req, res)
 {
@@ -47,7 +46,7 @@ exports.createMeal_plan = function (req, res) {
 
 exports.findById = function (req, res) {
     var id=req.params.id
-    User.findById(id, function (err, meal_plans) {
+    Meal_plan.findById(id, function (err, meal_plans) {
 
         if (err)
             res.send(err);
@@ -56,12 +55,12 @@ exports.findById = function (req, res) {
     });
 };
 
-exports.updateMeal_plan = function (req, res) {
+exports.updateMeal_Plan = function (req, res) {
     if (req.body.constructor === Object && Object.keys(req.body).length === 0) {
         res.status(400).send({ errors: true, message: 'Please provide all required field' });
     } else {
         var meal_plans = new Meal_plan(req.body)
-        User.update(meal_plans, function (err, meal_plans) {
+        meal_Plan.update(meal_plans, function (err, meal_plans) {
             if (err)
                 res.send(err);
             res.json({ errors: false, message: 'Meal plans successfully updated' });

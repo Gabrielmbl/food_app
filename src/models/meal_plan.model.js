@@ -35,8 +35,8 @@ Meal_plan.update = function (meal_plans, result) {
     });
 };
 
-Meal_plan.findById = function (meal_plans, result) {
-    dbConn.query("SELECT * FROM meal_plans where mealid= ? ", meal_plans, function (err, res) {
+Meal_plan.findById = function (mealPlanID, result) {
+    dbConn.query("SELECT * FROM meal_plans where mealid = ? ", mealPlanID, function (err, res) {
         if (err) {
             console.log("errors: ", err);
             result(err, null);
@@ -61,3 +61,5 @@ Meal_plan.findAll = function (result) {
         }
     });
 };
+
+module.exports = Meal_plan;

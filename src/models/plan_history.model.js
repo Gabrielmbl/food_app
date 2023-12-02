@@ -1,15 +1,15 @@
+const dbConn = require("../../config/db.config");
 //plan history object create
 var Plan_History = function (plan_history) 
 {
+    const d = new Date();
     this.mealid = plan_history.mealid;
     this.userid = plan_history.userid;
-    this.start_date = plan_history.start_date;
-    this.end_date = plan_history.end_date;
+    this.start_date = d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
     this.amount = plan_history.amount;
-    this.payment_date = plan_history.payment_date;
 };
 
-Plan_History.create = function (plan_history, result) 
+Plan_History.createPlan_History = function (plan_history, result) 
 {
     dbConn.query("INSERT INTO plan_histories set ?", plan_history, function (err, res) 
     {
@@ -27,11 +27,9 @@ Plan_History.create = function (plan_history, result)
     )
 };
 
-Plan_History.update = function (plan_history, result)
+Plan_History.end = function (id, result)
 {
-    console.log(plan_history)
-    dbConn.query("Update plan_histories Set end_date = ?", [plan_history.end_date], 
-    function(err, res)
+    dbConn.query("Update plan_histories Set end_date = now() Where phid = ? ", [id], function(err, res)
     {
         if (err) 
         {
@@ -61,7 +59,7 @@ Plan_History.findAll = function (result)
     });
 };
 
-Order.searchByUserID = function (userid, result) 
+Plan_History.searchByUserID = function (userid, result) 
 {
     dbConn.query("SELECT * FROM plan_histories where userid = ? ", [userid], function (err, res) 
     {
@@ -76,3 +74,5 @@ Order.searchByUserID = function (userid, result)
         }
     });
 };
+
+module.exports = Plan_History;
