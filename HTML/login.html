@@ -27,30 +27,42 @@
     {
       var userID= document.getElementById('userID').value
       var pwd= document.getElementById('pwd').value
-      var url=`http://localhost:4001/api/users/`;
-      var data = 
+
+      if (userID == "")
       {
-        'userid': userID,
-        'password': pwd
+        alert("Please enter a user ID")
       }
-      //console.log(data)
-      //alert(url)
-      $.post(url, data, function(data, status)
+      else if (pwd == "")
       {
-        console.log(data.errors)
-        console.log(data)
-        var user=data.data
-        //alert("Data: " + data + "\nStatus: " + status);
-
-        if (status == "success")
+        alert("Please enter a password")
+      }
+      else
+      {
+        var url=`http://localhost:4001/api/users/`;
+        var data = 
         {
-          localStorage.setItem("userid", user.userid);
-          localStorage.setItem("fname", user.fname);
-          localStorage.setItem("lname", user.lname);
+          'userid': userID,
+          'password': pwd
+        }
+        //console.log(data)
+        //alert(url)
+        $.post(url, data, function(data, status)
+        {
+          console.log(data.errors)
+          console.log(data)
+          var user=data.data
+          //alert("Data: " + data + "\nStatus: " + status);
 
-          window.location.href = "userOptions.html";
+          if (status == "success")
+          {
+            localStorage.setItem("userid", user.userid);
+            localStorage.setItem("fname", user.fname);
+            localStorage.setItem("lname", user.lname);
+
+            window.location.href = "userOptions.html";
         }
       });
+      }
     }
   </script>
 </body>
