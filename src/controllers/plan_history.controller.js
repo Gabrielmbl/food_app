@@ -12,8 +12,7 @@ exports.createPlan_History = function (req, res) {
     let data =
     {
         mealid: req.body.mealid,
-        userid: req.body.userid,
-        amount: req.body.amount
+        userid: req.body.userid
     };
     const plan_history = new Plan_History(data);
 
@@ -37,6 +36,7 @@ exports.end = function (req, res)
     {
         if (err)
             res.send(err);
+
         res.json({ errors: false, message: 'Plan History successfully ended' });
     });
 };

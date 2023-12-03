@@ -1,17 +1,17 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <!-- Importing the Jquery Library -->
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <!-- Importing the Jquery Library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 
-  <script>
-        if (localStorage.getItem("userid") == null ||
-            localStorage.getItem("fname") == null ||
-            localStorage.getItem("lname") == null)
-        {
-            window.location.href = "login.html";
-        }
-  </script>
+    <script>
+            if (localStorage.getItem("userid") == null ||
+                localStorage.getItem("fname") == null ||
+                localStorage.getItem("lname") == null)
+            {
+                window.location.href = "login.html";
+            }
+    </script>
 
     <script>
         window.onload = function()
@@ -59,8 +59,9 @@
                             
                             if (status2 === "success")
                             {
-                                if (data2 && Array.isArray(data2.data)) {
-                                console.log("Data received:", data2.data); // Log the data array
+                                if (data2 && Array.isArray(data2.data)) 
+                                {
+                                    console.log("Data received:", data2.data); // Log the data array
                                     
                                     var orderContainer = document.getElementById("orderContainer");
                                     //orderContainer.innerHTML = ""; // Clear previous content

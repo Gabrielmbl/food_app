@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- Importing the Jquery Library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+    <script>
+        if (localStorage.getItem("userid") == null ||
+            localStorage.getItem("fname") == null ||
+            localStorage.getItem("lname") == null)
+        {
+            window.location.href = "login.html";
+        }
+    </script>
+
+    <script>
+    window.onload = function()
+    {
+        view();
+    }
+    </script>   
+</head>
+
+<body>
+    <h1> Previous Meal Plans </h1>
+
+    <div>
+        <a href="switchMealPlan.html">
+            <button> Switch Meal Plan </button>
+        </a>
+        <br> <br>
+        <a href="userOptions.html">
+            <button> Go Back To Home Page </button>
+        </a>
+    </div>
+    
+    <div id="historyContainer"></div>
+
+    <script>
+        function view() 
+        {
+            var userID = localStorage.getItem("userid");
+            var url = `http://localhost:4001/api/plan_history/${userID}`;
+
+            $.get(url, function (data, status) 
+            {
+                console.log(data.errors)
+                console.log(data)
+                var history = data.data
+
+                if (status === "success") 
+                {
+                    for (let i = 0; i < history.length; i++)
+                    {
+                        var mealPlanID = history[i].mealid
+                        var url2 = `http://localhost:4001/api/meal_plan/${mealPlanID}`;
+
+                        $.get(url2, function (data2, status2)
+                        {
+                            console.log(data2.errors)
+                            console.log(data2)
+                            
+                            if (status2 === "success")
+                            {
+                                if (data2 && Array.isArray(data2.data)) {
+                                console.log("Data received:", data2.data); // Log the data array
+                                    
+                                    var orderContainer = document.getElementById("historyContainer");
+                                    //orderContainer.innerHTML = ""; // Clear previous content
+
+                                    if (data.data[i].end_date == null)
+                                    {
+                                        var historyElement = document.createElement("div");
+                                        historyElement.innerHTML = `
+                                            <p>Meal Plan ID: ${data2.data[0].mealid}</p>
+                                            <p>Plan Name: ${data2.data[0].pname}</p>
+                                            <p>Meals Per Day: ${data2.data[0].num_meals_day}</p>
+                                            <p>Price: ${data2.data[0].price}</p>
+                                            <p>Description: ${data2.data[0].description}</p>
+                                            <p>Start Date: ${(data.data[i].start_date).substring(0, (data.data[i].start_date).indexOf("T"))}</p>
+                                            <p>End Date: None</p>
+                                            <hr>
+                                        `;
+                                    }
+                                    else
+                                    {
+                                        var historyElement = document.createElement("div");
+                                        historyElement.innerHTML = `
+                                            <p>Meal Plan ID: ${data2.data[0].mealid}</p>
+                                            <p>Plan Name: ${data2.data[0].pname}</p>
+                                            <p>Meals Per Day: ${data2.data[0].num_meals_day}</p>
+                                            <p>Price: ${data2.data[0].price}</p>
+                                            <p>Description: ${data2.data[0].description}</p>
+                                            <p>Start Date: ${(data.data[i].start_date).substring(0, (data.data[i].start_date).indexOf("T"))}</p>
+                                            <p>End Date: ${(data.data[i].end_date).substring(0, (data.data[i].end_date).indexOf("T"))}</p>
+                                            <hr>
+                                        `;
+                                    }
+                                    historyContainer.appendChild(historyElement);
+                                }
+                            }
+                        })
+                    }
+                }
+
+            });
+        }
+    </script>
+</body>
+</html>

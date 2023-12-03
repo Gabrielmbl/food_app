@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- Importing the Jquery Library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+    <script>
+        if (localStorage.getItem("userid") == null ||
+            localStorage.getItem("fname") == null ||
+            localStorage.getItem("lname") == null)
+        {
+            window.location.href = "login.html";
+        }
+
+        window.onload = function () 
+        {
+            view();
+        };
+    </script>
+</head>
+
+<body>
+    <h1> Switch Meal Plan </h1>
+
+    <div>
+        <a href="viewPreviousMealPlans.html">
+            <button> View Meal Plan History </button>
+        </a>
+        <br> <br>
+        <a href="userOptions.html">
+            <button> Go Back To Home Page </button>
+        </a>
+        <br> <br>
+        <label for="planid">What meal plan would you like to switch to?</label><br>
+        <select id="planidSelect"></select> <!-- Dropdown for Plan ID -->
+        <br>
+        <button onclick="switchPlan()">Submit</button>
+        <br>
+        <br>
+    </div>
+
+    <div id="planContainer"></div>
+
+    <script>
+        function switchPlan()
+        {
+            endOldPlan();
+
+            newPlan();
+        }
+
+        function endOldPlan()
+        {
+            var userID = localStorage.getItem("userid");
+
+            var url = `http://localhost:4001/api/plan_history/${userID}`;
+
+            $.post(url, function (data, status) 
+            {
+                console.log(data.errors);
+                //alert("Data: " + data + "\nStatus: " + status);
+            });
+        }
+
+        function newPlan()
+        {
+            var userID = localStorage.getItem("userid");
+            var planid = document.getElementById('planidSelect').value;
+
+            var data = 
+            {
+                'mealid': planid,
+                'userid': userID
+            }
+            var url2 = 'http://localhost:4001/api/plan_history/create';
+
+            $.post(url2, data, function (data, status) 
+            {
+                console.log(data.errors);
+                alert("Data: " + data + "\nStatus: " + status);
+                if (status === "success") 
+                {
+                    window.location.href = "userOptions.html";
+                }
+            });
+        }
+
+        function view()
+        {
+            var url = `http://localhost:4001/api/meal_plan/`;
+
+            $.get(url, function (response, status) 
+            {
+                if (status === "success") 
+                {
+                    console.log("Response received:", response); // Log the entire response
+
+                    if (response && Array.isArray(response.data)) 
+                    {
+                        console.log("Data received:", response.data); // Log the data array
+
+                        var planContainer = document.getElementById("planContainer");
+                        planContainer.innerHTML = ""; // Clear previous content
+
+                        var planDropdown = document.getElementById("planidSelect");
+                        planDropdown.innerHTML = ""; // Clear previous content
+
+                        response.data.forEach(function (plan) {
+                            console.log("Meal Plan:", plan); // Log each meal plan item to verify its structure
+
+                            var planElement = document.createElement("div");
+                            planElement.innerHTML = `
+                                <p>Meal Plan ID: ${plan.mealid}</p>
+                                <p>Name: ${plan.pname}</p>
+                                <p>Status: ${plan.status}</p>
+                                <p>Meals Per Day: ${plan.num_meals_day}</p>
+                                <p>Price: ${plan.price}</p>
+                                <p>Description: ${plan.description}</p>
+                                <hr>
+                            `;
+                            planContainer.appendChild(planElement);
+
+                            var option = document.createElement("option");
+                            option.value = plan.mealid;
+                            option.textContent = plan.mealid + ' - ' + plan.pname; // Set the display text
+                            planidSelect.appendChild(option);
+                        });
+                    } 
+                    else 
+                    {
+                        console.log("Data is not in the expected format:", response);
+                    }
+                } 
+                else 
+                {
+                    console.log("Failed to fetch data. Status:", status);
+                }
+            });
+        }
+    </script>
+</body>
+</html>

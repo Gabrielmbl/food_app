@@ -7,6 +7,7 @@ var Plan_History = function (plan_history)
     this.userid = plan_history.userid;
     this.start_date = d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
     this.amount = plan_history.amount;
+    this.payment_date = d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
 };
 
 Plan_History.createPlan_History = function (plan_history, result) 
@@ -29,7 +30,7 @@ Plan_History.createPlan_History = function (plan_history, result)
 
 Plan_History.end = function (id, result)
 {
-    dbConn.query("Update plan_histories Set end_date = now() Where phid = ? ", [id], function(err, res)
+    dbConn.query("Update plan_histories Set end_date = now() Where end_date Is null And userid = ?", [id], function(err, res)
     {
         if (err) 
         {
