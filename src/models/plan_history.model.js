@@ -2,10 +2,14 @@ const dbConn = require("../../config/db.config");
 //plan history object create
 var Plan_History = function (plan_history) 
 {
-    const d = new Date();
+    var d = new Date();
+    var date = new Date();
+    var endDate = new Date(date.setMonth(date.getMonth() + 6));
+
     this.mealid = plan_history.mealid;
     this.userid = plan_history.userid;
     this.start_date = d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
+    this.end_date = endDate.toISOString().substring(0, 10);
     this.amount = plan_history.amount;
     this.payment_date = d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
 };

@@ -20,7 +20,7 @@
 </head>
 
 <body>
-    <h1> Switch Meal Plan </h1>
+    <h1> Choose New Meal Plan </h1>
 
     <div>
         <a href="viewPreviousMealPlans.html">
@@ -34,7 +34,7 @@
         <label for="planid">What meal plan would you like to switch to?</label><br>
         <select id="planidSelect"></select> <!-- Dropdown for Plan ID -->
         <br>
-        <button onclick="switchPlan()">Submit</button>
+        <button onclick="newPlan()">Submit</button>
         <br>
         <br>
     </div>
@@ -42,26 +42,6 @@
     <div id="planContainer"></div>
 
     <script>
-        function switchPlan()
-        {
-            endOldPlan();
-
-            newPlan();
-        }
-
-        function endOldPlan()
-        {
-            var userID = localStorage.getItem("userid");
-
-            var url = `http://localhost:4001/api/plan_history/${userID}`;
-
-            $.post(url, function (data, status) 
-            {
-                console.log(data.errors);
-                //alert("Data: " + data + "\nStatus: " + status);
-            });
-        }
-
         function newPlan()
         {
             var userID = localStorage.getItem("userid");
