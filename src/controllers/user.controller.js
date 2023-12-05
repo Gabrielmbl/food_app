@@ -80,22 +80,23 @@ exports.create = function (req, res) {
 
 
 exports.place_order = function (req, res) {
-    // console.log("body update emp", req.body)
     if (req.body.constructor === Object && Object.keys(req.body).length === 0) {
-        res.status(400).send({ errors: true, message: 'Please provide all required fields' });
+      res.status(400).send({ errors: true, message: 'Please provide all required fields' });
     } else {
-        var userid= req.body.userid
-        var menuid= req.body.menuid
-
-        User.place_order(userid, menuid, function (err, user) {
-            if (err){
-                res.send(err);
-            }else{
-            res.status(200).json({ errors: false,message: 'Order placed successfully' });
-            }
+      const userid = req.body.userid;
+      const menuid = req.body.menuid;
+  
+      User.place_order(userid, menuid)
+        .then(() => {
+          res.status(200).json({ errors: false, message: 'Order placed successfully' });
+        })
+        .catch(err => {
+          console.error("Error placing order:", err);
+          res.status(500).json({ errors: true, message: 'Error placing order' });
         });
     }
-};
+  };
+  
 
 
 

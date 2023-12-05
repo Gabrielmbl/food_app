@@ -38,7 +38,6 @@
         <br>
 
         <label for="menuid">What would you like to order?</label><br>
-        <select id="menuidSelect"></select> <!-- Dropdown for Menu ID -->
         <br>
         <button onclick="place_order()">Submit</button>
         <br>
@@ -57,61 +56,29 @@
         } else {
             console.log("Element with ID 'userIDDisplay' not found in the DOM.");
         }
-        function view_menu() {
-            var url = 'http://localhost:4001/api/menus/view_menu';
-
-            $.get(url, function (response, status) {
-                if (status === "success") {
-                    console.log("Response received:", response); // Log the entire response
-
-                    if (response && Array.isArray(response.data)) {
-                        console.log("Data received:", response.data); // Log the data array
-
-                        var menuContainer = document.getElementById("menuContainer");
-                        menuContainer.innerHTML = ""; // Clear previous content
-
-                        var menuDropdown = document.getElementById("menuidSelect");
-                        menuDropdown.innerHTML = ""; // Clear previous content
-
-                        response.data.forEach(function (menu) {
-                            console.log("Menu item:", menu); // Log each menu item to verify its structure
-
-                            var menuElement = document.createElement("div");
-                            menuElement.innerHTML = `
-                                <p>Menu ID: ${menu.menuid}</p>
-                                <p>Name: ${menu.name}</p>
-                                <p>Description: ${menu.description}</p>
-                                <p>Price: ${menu.price}</p>
-                                <hr>
-                            `;
-                            menuContainer.appendChild(menuElement);
-
-                            var option = document.createElement("option");
-                            option.value = menu.menuid;
-                            option.textContent = menu.menuid + ' - ' + menu.name; // Set the display text
-                            menuDropdown.appendChild(option);
-                        });
-                    } else {
-                        console.log("Data is not in the expected format:", response);
-                    }
-                } else {
-                    console.log("Failed to fetch data. Status:", status);
-                }
-            });
-        }
-
-
-
-
-
 
         function place_order() {
             var userID = userIdFromStorage;
-            var menuid = document.getElementById('menuidSelect').value;
+            var selectedMenus = []; // Array to store selected menu IDs
+
+            // Get all checkboxes that are checked
+            var checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
+
+            // Loop through each checked checkbox and push its value (menuid) to the selectedMenus array
+            checkboxes.forEach(function (checkbox) {
+                selectedMenus.push(checkbox.value);
+            });
+
+            // If no checkboxes are selected, display an alert to the user
+            if (selectedMenus.length === 0) {
+                alert("Please select at least one item to order.");
+                return;
+            }
+
             var data = {
                 'userid': userID,
-                'menuid': menuid
-            }
+                'menuid': selectedMenus // Pass the array of selected menu IDs
+            };
             var url = 'http://localhost:4001/api/users/place_order';
 
             $.post(url, data, function (data, status) {
@@ -119,6 +86,61 @@
                 alert("Data: " + data + "\nStatus: " + status);
                 if (status === "success") {
                     window.location.href = "userOptions.html";
+                }
+            });
+        }
+
+        // Function to dynamically create checkboxes for each menu item
+        function createCheckboxes(menu) {
+            var menuContainer = document.getElementById("menuContainer");
+
+            var checkbox = document.createElement("input");
+            checkbox.type = "checkbox";
+            checkbox.name = "menuitem";
+            checkbox.value = menu.menuid;
+
+            var label = document.createElement("label");
+            label.textContent = menu.menuid + ' - ' + menu.name;
+
+            var br = document.createElement("br");
+
+            menuContainer.appendChild(checkbox);
+            menuContainer.appendChild(label);
+            menuContainer.appendChild(br);
+        }
+
+        // Update the view_menu function to create checkboxes instead of dropdown options
+        function view_menu() {
+            var url = 'http://localhost:4001/api/menus/view_menu';
+
+            $.get(url, function (response, status) {
+                if (status === "success") {
+                    console.log("Response received:", response);
+
+                    if (response && Array.isArray(response.data)) {
+                        console.log("Data received:", response.data);
+
+                        var menuContainer = document.getElementById("menuContainer");
+                        menuContainer.innerHTML = "";
+
+                        response.data.forEach(function (menu) {
+                            console.log("Menu item:", menu);
+                            createCheckboxes(menu); // Call the function to create checkboxes
+
+                            var menuElement = document.createElement("div");
+                            menuElement.innerHTML = `
+                                <p>Menu ID: ${menu.menuid}</p>
+                                <p>Name: ${menu.name}</p>
+                                <p>Description: ${menu.description}</p>
+                                <hr>
+                            `;
+                            menuContainer.appendChild(menuElement);
+                        });
+                    } else {
+                        console.log("Data is not in the expected format:", response);
+                    }
+                } else {
+                    console.log("Failed to fetch data. Status:", status);
                 }
             });
         }

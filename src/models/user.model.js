@@ -131,174 +131,226 @@ module.exports = Users;
 
 
 Users.place_order = function (userid, menuid, result) {
-    let orderid;
-    let food_price;
-    dbConn.query("SELECT price FROM menus WHERE menuid = ?", [menuid], function (err, result) {
-        if (err) {
-            console.log("Error checking menu price: ", err);
-            result(null, err);
-        } else {
-            food_price = result[0]['price'];
-        }
-    });
-    // Check if user has meal plan
-    dbConn.query("select * from plan_histories where userid = ? and start_date <= CURDATE() and end_date >= CURDATE() order by end_date desc limit 1", [userid], function (err, meal_check_result) {
-        if (err) {
-            console.log("Error checking meal plan: ", err);
-            result(null, err);
-        } else {
-            // If the user has an ACTIVE meal plan
-            if (meal_check_result.length > 0) {
-                const mealid = meal_check_result[0]['mealid'];
-                const num_meals_sql = "select * from meal_plans where mealid = ?";
-                dbConn.query(num_meals_sql, [mealid], function (err, num_meals_result) {
-                    if (err) {
-                        console.log("Error fetching number of meals: ", err);
-                        result(null, err);
-                    } else {
-                        // Checking the user's meal plan
-                        if (num_meals_result.length > 0) {
+    return new Promise((resolve, reject) => {
+        // Check if user has a meal plan
+        dbConn.query("select * from plan_histories where userid = ? and start_date <= CURDATE() and end_date >= CURDATE() order by end_date desc limit 1", [userid], function (err, meal_check_result) {
+            if (err) {
+                console.log("Error checking meal plan: ", err);
+                result(null, err);
+            } else {
+                // If the user has an ACTIVE meal plan
+                if (meal_check_result.length > 0) {
+                    const mealid = meal_check_result[0]['mealid'];
+                    const num_meals_sql = "select * from meal_plans where mealid = ?";
+                    dbConn.query(num_meals_sql, [mealid], function (err, num_meals_result) {
+                        if (err) {
+                            console.log("Error fetching number of meals: ", err);
+                            result(null, err);
+                        } else {
+                            // Checking the user's meal plan
+
                             const num_meals = parseInt(num_meals_result[0]['num_meals_day']);
 
-                            // Check if an order for the user on the same day exists
-                            const sql3 = "SELECT * FROM orders WHERE userid = ? AND DATE(date) = CURDATE()";
-                            dbConn.query(sql3, [userid], function (err, myresult3) {
-                                if (err) {
-                                    console.log("Error checking user's order today: ", err);
-                                    result(null, err);
-                                } else {
-                                    // If there is an order on that day
-                                    if (myresult3.length > 0) {
-                                        // const orderid = myresult3[0]['orderid'];
-                                        orderid = myresult3[0]['orderid'];
-                                        console.log('Found an order made by this user today', orderid);
-
-                                        // Check the amount of times the user has eaten today
-                                        const num_times_sql = "SELECT count(*) as num_times FROM menus_orders WHERE userid = ? and orderid = ? and DATE(date) = CURDATE()";
-                                        dbConn.query(num_times_sql, [userid, orderid], function (err, num_times_result) {
+                            // Check amount of times the user has eaten today
+                            checkSwipesAmount(userid)
+                                .then(num_swipes_today => {
+                                    console.log("Number of swipes today:", num_swipes_today);
+                                    // Create an order (if the user has used all their swipes, add $10 to order price)
+                                    if (num_swipes_today < num_meals) {
+                                        createOrder(userid, 0, function (err, result) {
                                             if (err) {
-                                                console.log("Error checking the number of times the person has eaten today: ", err);
-                                                result(null, err);
+                                                console.error("Error occurred:", err);
                                             } else {
-                                                const num_times = num_times_result[0]['num_times'];
+                                                console.log("Order created:", result);
+                                                // Get the recently created order id
+                                                getRecentlyCreatedOrderId(userid)
+                                                    .then(recently_created_orderid => {
+                                                        // Use recently_created_orderid here
+                                                        console.log("Recently created order ID:", recently_created_orderid);
 
-                                                // Check if user has eaten less times than he is allowed, which would keep the order's price $0
-                                                if (num_times < num_meals) {
-                                                    const order_sql_update = "UPDATE orders SET price = 0 WHERE userid = ? AND DATE(date) = CURDATE()";
-                                                    insertMenusOrders(orderid, menuid, userid, result);
-                                                    dbConn.query(order_sql_update, [userid], function (err) {
-                                                        if (err) {
-                                                            console.log("Error updating existing order for today's price: ", err);
-                                                            result(null, err);
+                                                        // Populate the menus_orders table
+                                                        // Iterate through each menu ID and call insertMenusOrders
+                                                        if (menuid.length === 1) {
+                                                            insertMenusOrders(recently_created_orderid, menuid[0], userid, function (err, result) {
+                                                                if (err) {
+                                                                    console.error("Error occurred:", err);
+                                                                } else {
+                                                                    console.log("Result:", result);
+                                                                    // Handle result if needed
+                                                                }
+                                                            });
                                                         } else {
-                                                            //result(null, 'Order updated successfully');
+                                                            menuid.forEach(id => {
+                                                                insertMenusOrders(recently_created_orderid, id, userid, function (err, result) {
+                                                                    if (err) {
+                                                                        console.error("Error occurred:", err);
+                                                                    } else {
+                                                                        console.log("Result:", result);
+                                                                        // Handle result if needed
+                                                                    }
+                                                                });
+                                                            });
                                                         }
+                                                    })
+                                                    .catch(err => {
+                                                        // Handle error
+                                                        console.error("Error occurred:", err);
                                                     });
-                                                } else {
-                                                    // In case the user has eaten more times than he is allowed today, add food price to order price
-                                                    const order_sql_update = "UPDATE orders SET price = price + ? WHERE userid = ? AND DATE(date) = CURDATE()";
-                                                    insertMenusOrders(orderid, menuid, userid, result);
-                                                    dbConn.query(order_sql_update, [food_price, userid], function (err) {
-                                                        if (err) {
-                                                            console.log("Error updating existing order for today's price: ", err);
-                                                            result(null, err);
-                                                        } else {
-                                                            //result(null, 'Order updated successfully');
-                                                        }
-                                                    });
-                                                }
                                             }
                                         });
-
                                     } else {
-                                        // No order found for the user today, create a new one
-                                        const sql5 = "INSERT INTO orders (userid, price, date) VALUES(?, 0, NOW())";
-                                        dbConn.query(sql5, [userid], function (err, result) {
+                                        createOrder(userid, 10, function (err, result) {
                                             if (err) {
-                                                console.log("Error adding order for today: ", err);
-                                                result(null, err);
+                                                console.error("Error occurred:", err);
                                             } else {
-                                                const get_order_by_userid_date = "SELECT * FROM orders where userid = ? and date(date) = CURDATE()";
-                                                dbConn.query(get_order_by_userid_date, [userid], function (err, result) {
-                                                    if (err) {
-                                                        result(null, err);
-                                                    }
-                                                    else {
-                                                        if (result.length > 0) {
-                                                            orderid = result[0]['orderid'];
-                                                            insertMenusOrders(orderid, menuid, userid, result);
+                                                console.log("Order created:", result);
+                                                // Get the recently created order id
+                                                getRecentlyCreatedOrderId(userid)
+                                                    .then(recently_created_orderid => {
+                                                        // Use recently_created_orderid here
+                                                        console.log("Recently created order ID:", recently_created_orderid);
+
+                                                        // Populate the menus_orders table
+                                                        // Iterate through each menu ID and call insertMenusOrders
+                                                        if (menuid.length === 1) {
+                                                            insertMenusOrders(recently_created_orderid, menuid[0], userid, function (err, result) {
+                                                                if (err) {
+                                                                    console.error("Error occurred:", err);
+                                                                } else {
+                                                                    console.log("Result:", result);
+                                                                    // Handle result if needed
+                                                                }
+                                                            });
+                                                        } else {
+                                                            menuid.forEach(id => {
+                                                                insertMenusOrders(recently_created_orderid, id, userid, function (err, result) {
+                                                                    if (err) {
+                                                                        console.error("Error occurred:", err);
+                                                                    } else {
+                                                                        console.log("Result:", result);
+                                                                        // Handle result if needed
+                                                                    }
+                                                                });
+                                                            });
                                                         }
-                                                    }
-                                                });
-                                                console.log('No order found for the user, creating a new one')
+                                                    })
+                                                    .catch(err => {
+                                                        // Handle error
+                                                        console.error("Error occurred:", err);
+                                                    });
                                             }
-                                        })
-
+                                        });
                                     }
-                                }
-                            });
-                        } else {
-                            console.log("No meals left for mealid: ", mealid);
-                            result(null, 0);
+                                    resolve();
+                                })
+                                .catch(err => {
+                                    console.error("Error occurred:", err);
+                                    // Handle error if needed
+                                    reject(err);
+                                });
+
                         }
-                    }
-                });
-            } else {
-                console.log("User doesn't have a meal plan.");
-                // Check if an order for the user on the same day exists
-                const sql3 = "SELECT * FROM orders WHERE userid = ? AND DATE(date) = CURDATE()";
-                dbConn.query(sql3, [userid], function (err, myresult3) {
-                    if (err) {
-                        console.log("Error checking user's order today: ", err);
-                        result(null, err);
-                    } else {
-                        if (myresult3.length > 0) {
-                            console.log('Found an order made by this user today');
-                            // Update orderid here
-                            orderid = myresult3[0]['orderid'];
-                            const order_sql_update = "UPDATE orders SET price = price + ? WHERE userid = ? AND DATE(date) = CURDATE()";
-                            insertMenusOrders(orderid, menuid, userid, result);
-                            dbConn.query(order_sql_update, [food_price, userid], function (err) {
-                                if (err) {
-                                    console.log("Error updating existing order for today's price: ", err);
-                                    result(null, err);
-                                } else {
-                                    //result(null, 'Order updated successfully');
-                                }
-                            });
+                    });
+                } else { // If user doesn't have a meal plan
+
+                    // Each order will be $10
+                    createOrder(userid, 10, function (err, result) {
+                        if (err) {
+                            console.error("Error occurred:", err);
                         } else {
-                            console.log('Did not find an order made by this user today');
-                            const sql6 = "INSERT INTO orders (userid, price, date) VALUES (?, ?, NOW())"
-                            dbConn.query(sql6, [userid, food_price], function (err) {
-                                if (err) {
-                                    console.log("Error creating order for today: ", err);
-                                    result(null, err);
-                                } else {
-                                    // result(null, 'Order created successfully');
-                                }
-                            });
-                            const sql7 = "SELECT * FROM orders WHERE userid = ? AND DATE(date) = CURDATE()";
-                            dbConn.query(sql7, [userid], function (err, myresult4) {
-                                if (err) {
-                                    console.log("Error checking order: ", err);
-                                    result(null, err);
-                                } else {
-                                    if (myresult4.length > 0) {
-                                        orderid = myresult4[0]['orderid'];
-                                        insertMenusOrders(orderid, menuid, userid, result);
+                            console.log("Order created:", result);
+                            // Handle result if needed
+                            // Get the recently created order id
+                            getRecentlyCreatedOrderId(userid)
+                                .then(recently_created_orderid => {
+                                    // Use recently_created_orderid here
+                                    console.log("Recently created order ID:", recently_created_orderid);
+
+                                    // Populate the menus_orders table
+                                    // Iterate through each menu ID and call insertMenusOrders
+                                    if (menuid.length === 1) {
+                                        insertMenusOrders(recently_created_orderid, menuid[0], userid, function (err, result) {
+                                            if (err) {
+                                                console.error("Error occurred:", err);
+                                            } else {
+                                                console.log("Result:", result);
+                                                // Handle result if needed
+                                            }
+                                        });
+                                    } else {
+                                        menuid.forEach(id => {
+                                            insertMenusOrders(recently_created_orderid, id, userid, function (err, result) {
+                                                if (err) {
+                                                    console.error("Error occurred:", err);
+                                                } else {
+                                                    console.log("Result:", result);
+                                                    // Handle result if needed
+                                                }
+                                            });
+                                        });
                                     }
-                                }
-                            });
+                                    resolve();
+                                })
+                                .catch(err => {
+                                    // Handle error
+                                    console.error("Error occurred:", err);
+                                    reject(err);
+                                });
+
                         }
-                    }
-                });
-
-
+                    });
+                }
             }
+        });
+    });
+}
+
+
+function getRecentlyCreatedOrderId(userid) {
+    return new Promise((resolve, reject) => {
+        const get_recent_order_query = "SELECT * FROM orders WHERE userid = ? AND DATE(date) = CURDATE() ORDER BY date DESC LIMIT 1";
+        dbConn.query(get_recent_order_query, [userid], function (err, orderid_result) {
+            if (err) {
+                console.log("Error checking the recently created order ID: ", err);
+                reject(err);
+            } else {
+                const orderid = orderid_result[0]['orderid'];
+                resolve(orderid);
+            }
+        });
+    });
+}
+
+function createOrder(userid, price, callback) {
+    const sql5 = "INSERT INTO orders (userid, price, date) VALUES(?, ?, NOW())";
+    dbConn.query(sql5, [userid, price], function (err, result) {
+        if (err) {
+            console.log("Error adding order for today: ", err);
+            callback(err, null);
+        } else {
+            console.log('Creating a new order');
+            callback(null, result);
         }
     });
-};
+}
 
+
+
+function checkSwipesAmount(userid) {
+    return new Promise((resolve, reject) => {
+        const check_swipes_amount_query = "SELECT count(*) as num_times FROM orders WHERE userid = ? and DATE(date) = CURDATE()";
+
+        dbConn.query(check_swipes_amount_query, [userid], function (err, num_times_result) {
+            if (err) {
+                console.log("Error checking the number of times the person has eaten today: ", err);
+                reject(err);
+            } else {
+                const num_times = num_times_result[0]['num_times'];
+                resolve(num_times);
+            }
+        });
+    });
+}
 
 function insertMenusOrders(orderid, menuid, userid, result) {
     const menus_orders = "INSERT INTO menus_orders (orderid, menuid, userid, date) VALUES (?, ?, ?, NOW())";
